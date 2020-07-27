@@ -17,7 +17,7 @@ To train a [DDPG](https://arxiv.org/abs/1509.02971) agent to control a double-jo
 
 ## Background
 
-**Environment**: UnityML [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment.
+**Environment**: UnityML [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment. In this environment, a double-jointed arm can move to target locations. A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of your agent is to maintain its position at the target location for as many time steps as possible.
 
 **Observation Space**: The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities of the arm.
 
@@ -38,7 +38,6 @@ https://github.com/wjlgatech/DRL-continuous-control.git .
 ```
 
 ### Unity Environment
-=====================
 
 1. Download the environment that match your system:
 
