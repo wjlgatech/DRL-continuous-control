@@ -45,3 +45,6 @@ while True:
     if np.any(dones):                                  # exit loop if episode finished
         break
 print('Total score (averaged over agents) this episode: {}'.format(np.mean(scores)))
+
+
+env.close()
