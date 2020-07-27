@@ -95,3 +95,6 @@ plt.plot(np.arange(1, len(scores)+1), scores)
 plt.ylabel('Score')
 plt.xlabel('Episode #')
 plt.show()
+
+
+env.close()
