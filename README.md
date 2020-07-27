@@ -1,18 +1,23 @@
+[//]: # (Image References)
+
+[image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
+
+
 # DRL-continuous-control
 
-In this environment, a double-jointed arm can move to target locations. A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of your agent is to maintain its position at the target location for as many time steps as possible.
+![Trained Agent][image1]
 
  
 ## Objective
 
 To train a [DDPG](https://arxiv.org/abs/1509.02971) agent to control a double-jointed robotic arm to move to target locations. 
 
+[image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
+
+
 ## Background
 
 **Environment**: UnityML [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment.
-
-[image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
-
 
 **Observation Space**: The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities of the arm.
 
@@ -28,7 +33,9 @@ To consider the problem to be solved, the agent need to get an average of 30+ ov
 
 Clone the repository
 
-```https://github.com/wjlgatech/DRL-continuous-control.git .```
+```
+https://github.com/wjlgatech/DRL-continuous-control.git .
+```
 
 ### Unity Environment
 =====================
@@ -46,7 +53,9 @@ Clone the repository
 
 Open the Continuous-control.ipynb notebook
 
-```jupyter notebook Continuous-control.ipynb```
+```
+jupyter notebook Continuous-control.ipynb
+```
 
 ## Code Overview
 
