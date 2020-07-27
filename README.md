@@ -1,15 +1,13 @@
 # DRL-continuous-control
-========================
 
 In this environment, a double-jointed arm can move to target locations. A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of your agent is to maintain its position at the target location for as many time steps as possible.
 
  
 ## Objective
-============
+
 To train a [DDPG](https://arxiv.org/abs/1509.02971) agent to control a double-jointed robotic arm to move to target locations. 
 
 ## Background
-=============
 
 **Environment**: UnityML [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment.
 
@@ -25,12 +23,12 @@ To train a [DDPG](https://arxiv.org/abs/1509.02971) agent to control a double-jo
 To consider the problem to be solved, the agent need to get an average of 30+ over 100 consecutive episodes.
 
 ## Getting Start
-================
 
 ### Repository
-==============
 
-Clone the repository: `https://github.com/wjlgatech/DRL-continuous-control.git .`
+Clone the repository
+
+```https://github.com/wjlgatech/DRL-continuous-control.git .```
 
 ### Unity Environment
 =====================
@@ -45,13 +43,13 @@ Clone the repository: `https://github.com/wjlgatech/DRL-continuous-control.git .
 2.  Put the file in the `DRL_continuous-control/` folder, and unzip the file
 
 ### Jupyter Notebook
-====================
+
 Open the Continuous-control.ipynb notebook
 
-> `jupyter notebook Continuous-control.ipynb`
+```jupyter notebook Continuous-control.ipynb```
 
 ## Code Overview
-================
+
 The code consists of the following modules
 
 ```
@@ -63,5 +61,5 @@ checkpoint_critic.pth - is the final trained Critic network
 ```
 
 ## Results
-==========
+The average reward collected over 100 episodes is plotted as follow. 
 
