@@ -41,14 +41,14 @@ https://github.com/wjlgatech/DRL-continuous-control.git .
 
 1. Download the environment that match your system:
 
-```
+
 - Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux.zip)
 - Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher.app.zip)
 - Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Windows_x86.zip)
 - Windows (64-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Windows_x86_64.zip)
-```
 
-2.  Put the file in the `DRL_continuous-control/` folder, and unzip the file
+
+2.  Put the file in the `DRL-continuous-control/` folder, and unzip the file
 
 ### Jupyter Notebook
 
@@ -64,10 +64,12 @@ The code consists of the following modules
 
 ```
 Continuous_Control.ipynb - the main notebook
-agent.py - defines the Agent that is being trained
-model.py - defines the PyTorch model for the Actor and the Critic network
+ddpg_agent.py - defines the Agent that is to be trained
+model.py - defines the ddpg model for the Actor and the Critic network
 checkpoint_actor.pth - is the final trained Actor network
 checkpoint_critic.pth - is the final trained Critic network
+train.py - train the ddpg agent
+test.py - test the performance of the trained agent
 ```
 
 ## Results
