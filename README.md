@@ -12,8 +12,6 @@
 
 To train a [DDPG](https://arxiv.org/abs/1509.02971) agent to control a double-jointed robotic arm to move to target locations. 
 
-[image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
-
 
 ## Background
 
@@ -64,8 +62,8 @@ The code consists of the following modules
 
 ```
 Continuous_Control.ipynb - the main notebook
-ddpg_agent.py - defines the Agent that is to be trained
-model.py - defines the ddpg model for the Actor and the Critic network
+continuous_Control_report.ipynb - the report of this project
+ddpg_agent.py - defines the Agent that is to be trained and the ddpg model for the Actor and the Critic network
 checkpoint_actor.pth - is the final trained Actor network
 checkpoint_critic.pth - is the final trained Critic network
 train.py - train the ddpg agent
@@ -73,5 +71,4 @@ test.py - test the performance of the trained agent
 ```
 
 ## Results
-Environment is solved in 273 Episodes with	Average Score: 30.03. The average reward collected over 100 episodes is plotted as follow. 
-![cont_control_scores](image2)
+Environment is solved in 273 Episodes with	Average Score: 30.03. The scores averaged over all the agents collected over ~300 episodes is plotted at cont_control_scores.png.
