@@ -1,7 +1,7 @@
 [//]: # (Image References)
 
 [image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
-
+[image2]: 
 
 # DRL-continuous-control
 
@@ -73,5 +73,5 @@ test.py - test the performance of the trained agent
 ```
 
 ## Results
-The average reward collected over 100 episodes is plotted as follow. 
-
+Environment is solved in 273 Episodes with	Average Score: 30.03. The average reward collected over 100 episodes is plotted as follow. 
+![cont_control_scores](image2)
