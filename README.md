@@ -1,7 +1,7 @@
 [//]: # (Image References)
 
 [image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
-[image2]: 
+[image2]: https://github.com/wjlgatech/DRL-continuous-control/blob/master/cont_control_scores.png "cont_control_scores"
 
 # DRL-continuous-control
 
