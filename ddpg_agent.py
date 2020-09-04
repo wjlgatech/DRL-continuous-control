@@ -8,16 +8,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-#from ddpg_model import (Actor, Critic)
+from model import Actor, Critic
 
 # training hyperparameters
+buffer_size = int(1e6)             # max size (capacity) of the replay buffer
+batch_size = 1024                  # batch size to sample from repplay buffer
+gamma = 0.99                       # discount factor
+tau = 1e-3                         # soft update of target parameter
 lr_actor = 1e-4                    # learning rate of Actor
 lr_critic = 1e-3                   # learning rate of Critic
-weight_decay = 0.                  # L2 weight decay 
-gamma = 0.99                       # discount factor
-tau = 0.001                        # soft update parameter
-batch_size = 1024                  # batch size to sample from repplay buffer
-buffer_size = int(1e6)             # max size (capacity) of the replay buffer
+weight_decay = 0.0001              # L2 weight decay 
 n_agents = 20                      # number of parallel agents
 update_every = 20                  # update actor and critic networks after every update_every time steps
 update_freq = 10                   # frequency of updating the networks when ready to update
@@ -25,36 +25,40 @@ update_freq = 10                   # frequency of updating the networks when rea
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-class Agent(object):
-    def __init__(self, state_size, action_size, seed):
+class Agent():
+    """ Agent interact with environment and learn"""
+    def __init__(self, state_size, action_size, random_seed):
+        """ Initialize an Agent object
+        INPUT:
+        state_size (int): dim of each state
+        action_size (int): dim of each action
+        random_seed (int): random seed
+        
+        """
         super(Agent, self).__init__()
         
         self.state_size = state_size
         self.action_size = action_size
-        self.seed = torch.manual_seed(seed)
+        self.random_seed = torch.manual_seed(random_seed)
         
         # initialise local and target Actor networks
-        self.actor_local = Actor(state_size, action_size, seed).to(device)
-        self.actor_target = Actor(state_size, action_size, seed).to(device)
+        self.actor_local = Actor(state_size, action_size, random_seed).to(device)
+        self.actor_target = Actor(state_size, action_size, random_seed).to(device)
         self.actor_optim = optim.Adam(self.actor_local.parameters(), lr = lr_actor)
         
         # initialise local and target Critic networks
-        self.critic_local = Critic(state_size, action_size, seed).to(device)
-        self.critic_target = Critic(state_size, action_size, seed).to(device)
-        self.critic_optim = optim.Adam(self.critic_local.parameters(), lr = lr_critic, weight_decay = weight_decay)
+        self.critic_local = Critic(state_size, action_size, random_seed).to(device)
+        self.critic_target = Critic(state_size, action_size, random_seed).to(device)
+        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr = lr_critic, weight_decay = weight_decay)
         
-        
-        # copying the network weights of local model to target model
-        # self.hard_update(self.actor_local, self.actor_target)
-        # self.hard_update(self.critic_local, self.critic_target)
         
         # initialise the Ornstein-Uhlenbeck noise process
-        self.noise = OUNoise(action_size, seed)
+        self.noise = OUNoise(action_size, random_seed)
         
         # initialise the Replay Memory
-        self.memory = ReplayBuffer(buffer_size, batch_size, seed)
+        self.memory = ReplayBuffer(action_size, buffer_size, batch_size, random_seed)
         
-        # time step to keep track of updating
+        # initialize time step to keep track of update
         self.t_step = 0
         
         
@@ -66,7 +70,7 @@ class Agent(object):
             
     def step(self, states, actions, rewards, next_states, dones):
         
-        # each agent adding their experience tuples in the replay buffer
+        """ each agent save their experience tuples in the replay memory"""
         for i in range(n_agents):
             self.memory.add(states[i], actions[i], rewards[i], next_states[i], dones[i])
             
@@ -83,7 +87,7 @@ class Agent(object):
         
         
     def act(self, states, add_noise=True):
-            """Returns actions for given state as per current policy"""
+            """For each agent return action for given state according to current policy"""
             states = torch.from_numpy(states).float().to(device)
 
             self.actor_local.eval()
@@ -107,47 +111,54 @@ class Agent(object):
         
         
     def learn(self, experiences, gamma):
-        
+         """Update policy and value parameters using given batch of experience tuples.
+        Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
+        where:
+            actor_target(state) -> action
+            critic_target(state, action) -> Q-value
+        Params
+        ======
+            experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
+            gamma (float): discount factor
+        """
         states, actions, rewards, next_states, dones = experiences
         
-        # update critic
+        # -----------------update critic-----------------
         
         # Get the actions corresponding to next states and then their Q-values
         # from target critic network
         actions_next = self.actor_target(next_states)
         Q_targets_next = self.critic_target(next_states, actions_next)
         
-        # Compute Q targets for current states
+        # Compute Q targets for current states (y_i)
         Q_targets = rewards + (gamma * Q_targets_next * (1 - dones))
         
         # Compute critic loss
         Q_expected = self.critic_local(states, actions)
         critic_loss = F.mse_loss(Q_expected, Q_targets)
         
-        # Now minimize this loss
-        self.critic_optim.zero_grad()
+        # minimize the loss
+        self.critic_optimizer.zero_grad()
         critic_loss.backward()
         
         # gradient clipping as suggested
         nn.utils.clip_grad_norm(self.critic_local.parameters(), 1)
 
-        self.critic_optim.step()
+        self.critic_optimizer.step()
         
         
-        # Update Actor
+        # --------------Update Actor--------------------
         # Compute Actor loss
         actions_pred = self.actor_local(states)
-        
-        # -ve sign because we want to maximise this value
         actor_loss = -self.critic_local(states, actions_pred).mean()
         
         # minimizing the loss
-        self.actor_optim.zero_grad()
+        self.actor_optimizer.zero_grad()
         actor_loss.backward()
-        self.actor_optim.step()
+        self.actor_optimizer.step()
         
         
-        # update target networks
+        # ---------------update target networks-----------------
         self.soft_update(self.critic_local, self.critic_target, tau)
         self.soft_update(self.actor_local, self.actor_target, tau)
         
@@ -162,9 +173,6 @@ class Agent(object):
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
-
-        
-# Based on http://math.stackexchange.com/questions/1287634/implementing-ornstein-uhlenbeck-in-matlab
         
 class OUNoise(object):
     """Ornstein-Uhlenbeck process"""
@@ -192,13 +200,15 @@ class OUNoise(object):
     
 class ReplayBuffer(object):
     """Replay buffer to store experience tuples"""
-    def __init__(self, buffer_size, batch_size, seed):
+    def __init__(self, action_size, buffer_size, batch_size, seed):
         """Initialize a ReplayBuffer object.
         Params
         ======
+            action_size (int): dim of action
             buffer_size (int): maximum size of buffer
             batch_size (int): size of each training batch
         """
+        self.action_size = action_size
         self.memory = deque(maxlen=buffer_size)  # internal memory (deque)
         self.batch_size = batch_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
@@ -225,89 +235,3 @@ class ReplayBuffer(object):
         """Return the current size of internal memory."""
         return len(self.memory)
 
-    
-def hidden_init(layer):
-    fan_in = layer.weight.data.size()[0]
-    lim = 1.0 / np.sqrt(fan_in)
-    return (-lim, lim)
-
-class Actor(nn.Module):
-    """Actor (Policy) Model"""
-    def __init__(self, state_size, action_size, seed, hidden1=400, hidden2=300):
-        super(Actor, self).__init__()
-        
-        self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, hidden1)
-        self.fc2 = nn.Linear(hidden1, hidden2)
-        self.fc3 = nn.Linear(hidden2, action_size)
-        self.bn = nn.BatchNorm1d(state_size)
-        
-        self.tanh = nn.Tanh()
-        # initialise the weights
-        self.weight_initialiser()
-        
-        
-    def weight_initialiser(self):
-        """
-        All layers but the final layer are initilaised from uniform
-        distributions [-1/sqrt(f) , 1/sqrt(f)] where f is the fan-in of the layer
-        """
-        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
-        
-        """
-        The final layer is initialised from uniform distribution
-        [-3*10^-3, 3*10^-3]
-        """
-        self.fc3.weight.data.uniform_(-3e-3, 3e-3)
-        
-        
-    def forward(self, states):
-        # Actor network maps states to action probabilities 
-        if states.dim() == 1:
-            states = torch.unsqueeze(states, 0)
-
-        states = self.bn(states)
-        x = F.relu(self.fc1(states))
-        x = F.relu(self.fc2(x))
-        return self.tanh(self.fc3(x))
-    
-    
-class Critic(nn.Module):
-    """Critic (Value) Model"""
-    def __init__(self, state_size, action_size, seed, hidden1=400, hidden2=300):
-        super(Critic, self).__init__()
-        
-        self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, hidden1)
-        self.fc2 = nn.Linear(hidden1 + action_size, hidden2)
-        self.fc3 = nn.Linear(hidden2, 1)
-        self.bn = nn.BatchNorm1d(state_size)
-        self.weight_initialiser()
-    
-    def weight_initialiser(self):
-        """
-        All layers but the final layer are initilaised from uniform
-        distributions [-1/sqrt(f) , 1/sqrt(f)] where f is the fan-in of the layer
-        """
-        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
-        
-        """
-        The final layer is initialised from uniform distribution
-        [-3*10^-3, 3*10^-3]
-        """
-        self.fc3.weight.data.uniform_(-3e-3, 3e-3)
-    
-    def forward(self, states, actions):
-        # Critic network maps (state, action) pairs to Q-values
-        # For Batch Normalisation
-        if states.dim() == 1:
-            states = torch.unsqueeze(states, 0)
-        
-        states = self.bn(states)
-        xs = F.relu(self.fc1(states))
-        x = torch.cat([xs, actions], dim=1)
-        x = F.relu(self.fc2(x))
-        return self.fc3(x)
-    
