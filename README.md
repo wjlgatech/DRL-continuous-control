@@ -37,6 +37,10 @@ https://github.com/wjlgatech/DRL-continuous-control.git .
 
 ### Unity Environment
 
+0. set up dependencies 
+
+To set up your python environment to run the code in this repository, follow the [Udacity DRL repo](https://github.com/udacity/deep-reinforcement-learning/blob/master/README.md) instructions.
+
 1. Download the environment that match your system:
 
 
@@ -62,8 +66,9 @@ The code consists of the following modules
 
 ```
 Continuous_Control.ipynb - the main notebook
-continuous_Control_report.ipynb - the report of this project
-ddpg_agent.py - defines the Agent that is to be trained and the ddpg model for the Actor and the Critic network
+Report_continuous_Control.ipynb - the report of this project
+ddpg_agent.py - defines the Agent that is to be trained
+model.py - the ddpg model with the Actor and the Critic networks
 checkpoint_actor.pth - is the final trained Actor network
 checkpoint_critic.pth - is the final trained Critic network
 train.py - train the ddpg agent
@@ -71,4 +76,4 @@ test.py - test the performance of the trained agent
 ```
 
 ## Results
-Environment is solved in 273 Episodes with	Average Score: 30.03. The scores averaged over all the agents collected over ~300 episodes is plotted at cont_control_scores.png.
+Environment is solved in 273 Episodes with	Average Score: 30.03. The plot ddpg_result.png shows the averaged score (over all the agents and over 100 consecutive episodes) is collected over ~300 episodes.
