@@ -77,3 +77,7 @@ test.py - test the performance of the trained agent
 
 ## Results
 Environment is solved in 273 Episodes with	Average Score: 30.03. The plot ddpg_result.png shows the averaged score (over all the agents and over 100 consecutive episodes) is collected over ~300 episodes.
+
+## Credits
+
+The implementation of ddpg.py and model.py is adapted from https://github.com/udacity/deep-reinforcement-learning/tree/master/ddpg-bipedal for multiple-agents case.
